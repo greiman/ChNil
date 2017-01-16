@@ -1,0 +1,233 @@
+/**
+ * @page examples Examples
+ * @brief ChNil Examples
+ * - @ref genComment
+ * - @ref ChNilBlink
+ * - @ref ChNilBlinkPrint
+ * - @ref ChNilContextSwitch
+ * - @ref ChNilAdc  
+ * - @ref ChNilEvent
+ * - @ref ChNilInterrupt
+ * - @ref ChNilMailbox
+ * - @ref ChNilMemPool 
+ * - @ref ChNilSdLogger
+ * - @ref ChNilSemaphore
+ * - @ref ChNilTemplate1
+ * - @ref ChNilTemplate2
+ * - @ref ChNilTemplate3
+ * - @ref ChNilTestSem
+ * - @ref ChNilTimer1
+ * - @ref ChNilTwiSleepTest
+ * .
+ * @section genComment Understanding the Examples
+ * This section describes features common to all ChNil examples.
+ * @subsection extraLibraries Extra Libraries
+ * Two additional libraries are included in the extras folder.
+ * The ChNilSdLogger.ino example requires the SdFat library and
+ * the ChNilTwiSleepTest.ino example requires the TwiMaster library.
+ *
+ * The versions of the SdFat and TwiMaster libraries use during development
+ * of ChNil are included in the extras folder and must be moved to your 
+ * libraries folder if you run these examples.
+ *
+ * @subsection threadDef Definition of Threads
+ * A thread is defined by three macros, THD_WORKING_AREA(), THD_FUNCTION(),
+ * and THD_TABLE_ENTRY().
+ *
+ * The working area for a thread is declared by this statement.  The name of
+ * the working area is "waThread1" and its stack has 128 bytes beyond
+ * context switch and interrupt needs.
+ * @code
+ *  THD_WORKING_AREA(waThread1, 128);
+ * @endcode
+ *
+ * The entry point for a thread named Thread1 is declared by this statement.
+ * The thread function, Thread1, will be started with the argument "void *arg".
+ * @code
+ * THD_FUNCTION(Thread1, arg)
+ * @endcode
+ *
+ * The THD_TABLE_ENTRY macro defines a thread table entry.  The
+ * thread table is used by the ChNil scheduler.
+ * 
+ * The priority of a thread is determined by its position in the thread table
+ * with highest priority first.
+ *
+ * This is the thread table entry for a thread named "thread1" with entry point
+ * "Thread1".  The thread is started with a NULL argument and has "waThread1"
+ * as its working area.
+ *
+ * @code
+ * THD_TABLE_ENTRY(waThread1, "thread1", Thread1, NULL)
+ * @endcode
+ * @subsection idleThread The Idle Thread
+ * ChNil runs a special thread called the idle thread when all user
+ * defined threads are blocked.  The idle thread is therefore the lowest
+ * priority thread.
+ *
+ * The idle thread must not invoke any kernel primitive able to change
+ * a thread's state to not runnable.
+ *
+ * The ChNil Arduino library runs the loop() function in the idle thread
+ * when all other threads are blocked.
+ *
+ * @subsection nilScheduler The Nil Scheduler
+ * The ChNil scheduler is a fixed priority preemptive scheduler.
+ *
+ * The scheduling strategy is very simple, the currently ready thread with
+ * the highest priority is executed.
+ *
+ * A thread's priority is determined by its position in the thread table
+ * with highest priority first.
+ *
+ * Higher priority threads must block to allow lower priority threads to
+ * execute.  A thread can block by waiting on a semaphore, event, mailbox,
+ * or sleeping.
+ *
+ * @subsection stackMsg Stack Usage Messages
+ * The chFillStacks() function fills stack areas with a 0X55 pattern
+ * so that the "high water mark" can be determined for all stacks.
+ *
+ * The chPrintUnusedStack() function prints a message of this form.
+ * @verbatim
+Unused Stack: 57 28 1663
+@endverbatim
+ * This message indicates that the first thread in the thread table has
+ * 57 unused bytes of stack, the second thread has 28 bytes of unused stack,
+ * and the idle thread has 1663 bytes of unused stack.
+ *
+ * The chPrintStackSizes() function prints a message of this form.
+ * @verbatim
+Stack Sizes: 133 101 85 1614
+@endverbatim
+ * This message indicates that the first thread in the thread table started
+ * with a total stack size of 133 bytes, the second thread started with 101
+ * bytes, the third thread started with 85 bytes, and the total stack
+ * space for the idle thread is 1614 bytes.
+ *
+ * @section nilExamples Examples
+ *
+ * The following examples are in the ChNil/examples folder.
+ *
+ * @subsection ChNilBlink Two Thread Blink
+ * The ChNilBlink.ino example demonstrates thread definition, semaphores,
+ * and thread sleep.
+ *
+ * Thread 1 waits on a semaphore and turns the LED off when signalled
+ *  by thread 2.
+ *
+ * Thread 2 turns the LED on, sleeps for a period, signals thread 1 to
+ *  turn the LED off, and sleeps for another period.
+ *
+ * @subsection ChNilBlinkPrint Blink Print
+ * The ChNilBlinkPrint.ino example demonstrates thread definition, thread sleep,
+ * the idle thread, concurrent access to a variable, and ChNilSerial.
+ *
+ * Thread 1 blinks the LED and sleeps between LED state changes.
+ *
+ * Thread 2 prints a message once a second. The message has the value of a
+ * counter that is incremented in the idle thread and the amount of unused
+ * stack for each thread.
+ *
+ * The idle thread increments a counter in a critical section.
+ *
+ * @subsection ChNilContextSwitch Scope Context Switch Test
+ * The ChNilContextSwitch.ino example demonstrates the time require for a semaphore
+ * signal plus a thread context switch.
+ *
+ * To use this example, connect a scope to pin 13.
+ *
+ * Measure the difference in time between the first pulse with no context
+ * switch and the second pulse started in thread 2 and ended in thread 1.
+ * The difference should be about 12 usec on a 16 MHz 328 Arduino.
+ *
+ * @subsection ChNilEvent Example of ChNil event flags.
+ * The ChNilEvent.ino example demonstrates an event listener and two event
+ * source threads.
+ 
+ * @subsection ChNilInterrupt Interrupt Service Routine
+ * The ChNilInterrupt.ino example demonstrates a handler thread triggered
+ * from an ISR by using a semaphore.
+ *
+ * The a pin change interrupt is generated by thread 2. Thread 2 prints a
+ * "High" message, set the pin high, prints a "Low" message and sets the
+ * pin low.
+ *
+ * The pin going high triggers an interrupt that invokes the pin change ISR.
+ * The pin change ISR stores the time in micros() and signals a handler
+ * thread with a semaphore.
+ *
+ * Thread 1, the handler thread prints message with the interrupt response time.
+ * This message should occur between the "High" and "Low" messages from
+ * thread 2.
+ *
+ * @subsection ChNilMailbox ChNil Mailbox Demo
+ * The ChNilMailbox.ino example demonstrates the use of mailboxes to
+ * implement simple queues.
+ * 
+ * @subsection ChNilMemPool ChNil Memory Pool Demo
+ * The ChNilMemPool.ino example demonstrates use of memory pools
+ * and mailboxes.
+ *
+ * @subsection ChNilSdLogger Mailbox Based SD Data Logger
+ * The ChNilSdLogger.ino example is a complete SD data logger using
+ * mailboxes, chTimer1Wait(), and chAnalogRead().
+ *
+ * ChNilSdLogger is structured as a starting point for a custom data logger.
+ *
+ * A quality SD card is required for best performance.  Adjust these constants
+ * to match your SD card.
+ *
+ * @code
+// Time between points in microseconds.
+// Maximum value is 4,194,304 (2^22) usec.
+const uint32_t PERIOD_USEC = 250;
+
+// Number of ADC channels to log
+const uint8_t NADC = 2;
+
+// Number of mailbox slots.
+#define NUM_BUFFERS 200
+ * @endcode
+ *
+ * @subsection ChNilSemaphore Counting Semaphore
+ * The ChNilSemaphore.ino demonstrates limiting access to a region of code by
+ * using a counting semaphore.
+ *
+ * The example has three threads but only allows
+ * two threads to access the restricted region.
+ *
+ * @subsection ChNilTemplate1 Template for One Thread
+ * The ChNilTemplate1.ino example is a template for one normal thread plus
+ * the idle thread.  The template prints stack sizes and unused stack space.
+ *
+ * @subsection ChNilTemplate2 Template for Two Threads
+ * The ChNilTemplate1.ino example is a template for two normal threads plus
+ * the idle thread.  The template prints stack sizes and unused stack space.
+ *
+ * @subsection ChNilTemplate3 Template for Three Threads
+ * The ChNilTemplate1.ino example is a template for three normal threads plus
+ * the idle thread.  The template prints stack sizes and unused stack space.
+ *
+ * @subsection ChNilAdc Demo of chAnalogRead
+ * the ChNilAdc.ino example is a simple test that compares Arduino
+ * analogRead() with chAnalogRead().
+ *
+ * The test verifies that chAnalogRead() sleeps while ADC conversion is in progress.
+ *
+ * chAnalogRead() allows lower priority threads to execute while the ADC is busy.
+ *
+ * @subsection ChNilTestSem Test of Semaphore Functions
+ * The nilSemTest.ino example tests semaphore functions.  It a quality
+ * assurance tests for the ChNil library and can be ignored by most
+ * users.
+ *
+ * @subsection ChNilTimer1 Test of ChNilTimer1
+ * ChNilTimer1.ino is a very simple test to verify ChNilTimer1
+ * works as expected.
+ *
+ * @subsection ChNilTwiSleepTest TwiMaster Sleep Test
+ * ChNilTwiSleepTest.ino is a test to verify that threads sleep while I2C
+ * transfers occur.  It prints the percent of time save for other threads
+ * by using the TwiMaster library in place of the standard Wire library.
+ */

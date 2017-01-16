@@ -1,0 +1,25 @@
+var group__config =
+[
+    [ "CH_CFG_ST_RESOLUTION", "group__config.html#ga2af9a4c66ec41bad799a27c94728c1ae", null ],
+    [ "CH_CFG_ST_FREQUENCY", "group__config.html#ga174ac107e620ac81bb1487c1ad7ad839", null ],
+    [ "CH_CFG_ST_TIMEDELTA", "group__config.html#ga11ec0b9fb6a84d32dbc8567cc4af4d17", null ],
+    [ "CH_CFG_USE_SEMAPHORES", "group__config.html#gae66a111a6efc858624b42c8370b62cf6", null ],
+    [ "CH_CFG_USE_MUTEXES", "group__config.html#ga7263b362a62e34158d09b44b4c204c27", null ],
+    [ "CH_CFG_USE_EVENTS", "group__config.html#ga1469eb9d4445e870ed1a45a841c10fb3", null ],
+    [ "CH_CFG_USE_MAILBOXES", "group__config.html#gae7b225553e9e069eda0dc0a251e0882c", null ],
+    [ "CH_CFG_USE_MEMCORE", "group__config.html#gaad95228d05e4107b33836d30d21645a7", null ],
+    [ "CH_CFG_USE_HEAP", "group__config.html#ga0968280d9bbbcda48177d14d77058737", null ],
+    [ "CH_CFG_USE_MEMPOOLS", "group__config.html#ga826c1fac997fb6e976c3012d20316444", null ],
+    [ "CH_CFG_MEMCORE_SIZE", "group__config.html#ga185a9549f0d212530070e806680c4949", null ],
+    [ "CH_DBG_STATISTICS", "group__config.html#ga01fa48cf866c26bad886a15c37571f99", null ],
+    [ "CH_DBG_SYSTEM_STATE_CHECK", "group__config.html#ga10db71bc25605169dddc82c1604b0a16", null ],
+    [ "CH_DBG_ENABLE_CHECKS", "group__config.html#gaef984ca3bfd8a71478ad55ce6e56a8bb", null ],
+    [ "CH_DBG_ENABLE_ASSERTS", "group__config.html#gad602fd2546073869a10859158d865b9b", null ],
+    [ "CH_DBG_ENABLE_STACK_CHECK", "group__config.html#gab93d9ee904f15d4f2c26ef2a1394a1d7", null ],
+    [ "CH_CFG_SYSTEM_INIT_HOOK", "group__config.html#gad031a431cb1578b72782a80024b959c4", null ],
+    [ "CH_CFG_THREAD_EXT_FIELDS", "group__config.html#gaa26a5cb32162473692307050ee1c9162", null ],
+    [ "CH_CFG_THREAD_EXT_INIT_HOOK", "group__config.html#ga1b97f7f6dde1b100c1cd6cbb15af4ea6", null ],
+    [ "CH_CFG_IDLE_ENTER_HOOK", "group__config.html#ga5193dc6602d532b5eb171c6459d80707", null ],
+    [ "CH_CFG_IDLE_LEAVE_HOOK", "group__config.html#ga2b4d6d05e655234eb7b46fb16e8180a9", null ],
+    [ "CH_CFG_SYSTEM_HALT_HOOK", "group__config.html#ga03c17b48d4f0444046d41102acb3a54b", null ]
+];
