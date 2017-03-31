@@ -23,7 +23,7 @@ now very much like ChibiOS/RT.
 If you are installing from GitHub repo zips, rename the folder ChNil
 before copying it to your Arduino/libraries folder.
 
-Please read ChNil.htlm for more information.  See the Examples section
+Please read ChNil.html for more information.  See the Examples section
 of the html documentation.
 
 Start with the ChNilBlink example which is traditional for almost every RTOS.

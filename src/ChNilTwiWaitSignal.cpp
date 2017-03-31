@@ -17,7 +17,7 @@
  * along with the Arduino NilRTOS Library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include "chNil.h"
+#include "ChNil.h"
 static SEMAPHORE_DECL(twiSem, 0);
 
 void twiMstrSignal() {
