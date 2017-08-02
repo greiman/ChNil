@@ -108,7 +108,7 @@
 
 /* Low Level HAL support.*/
 #include "hal_lld.h"
-
+#if WHG_MOD
 /*
  *  The ST driver is a special case, it is only included if the OSAL is
  *  configured to require it.
@@ -116,7 +116,8 @@
 #if OSAL_ST_MODE != OSAL_ST_MODE_NONE
 #include "hal_st.h"
 #endif
-#if 0  ///////////////////////////////////////////////////////////
+
+#else // WHG_MOD
 /* Abstract interfaces.*/
 #include "hal_streams.h"
 #include "hal_channels.h"
@@ -149,7 +150,13 @@
 #include "hal_usb.h"
 #include "hal_wdg.h"
 
-
+/*
+ *  The ST driver is a special case, it is only included if the OSAL is
+ *  configured to require it.
+ */
+#if OSAL_ST_MODE != OSAL_ST_MODE_NONE
+#include "hal_st.h"
+#endif
 
 /* Complex drivers.*/
 #include "hal_mmc_spi.h"
@@ -160,9 +167,8 @@
 #if (HAL_USE_COMMUNITY == TRUE) || defined(__DOXYGEN__)
 #include "hal_community.h"
 #endif
-#endif  //////////////////////////////////////////////////////////////////// WHG
+#endif  // WHG_MOD
 #endif
-
 /*===========================================================================*/
 /* Driver constants.                                                         */
 /*===========================================================================*/
@@ -175,7 +181,7 @@
 /**
  * @brief   Stable release flag.
  */
-#define CH_HAL_STABLE           0
+#define CH_HAL_STABLE           1
 
 /**
  * @name    ChibiOS/HAL version identification

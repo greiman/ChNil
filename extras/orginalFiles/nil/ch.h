@@ -46,7 +46,7 @@
 /**
  * @brief   Stable release flag.
  */
-#define CH_KERNEL_STABLE        0
+#define CH_KERNEL_STABLE        1
 
 /**
  * @name    ChibiOS/NIL version identification
@@ -111,12 +111,12 @@
                                                  executing.                 */
 #define NIL_STATE_SLEEPING      (tstate_t)1 /**< @brief Thread sleeping.    */
 #define NIL_STATE_SUSP          (tstate_t)2 /**< @brief Thread suspended.   */
-#define NIL_STATE_WTSEM         (tstate_t)3 /**< @brief On semaphore.       */
+#define NIL_STATE_WTQUEUE       (tstate_t)3 /**< @brief On queue or semaph. */
 #define NIL_STATE_WTOREVT       (tstate_t)4 /**< @brief Waiting for events. */
 #define NIL_THD_IS_READY(tr)    ((tr)->state == NIL_STATE_READY)
 #define NIL_THD_IS_SLEEPING(tr) ((tr)->state == NIL_STATE_SLEEPING)
 #define NIL_THD_IS_SUSP(tr)     ((tr)->state == NIL_STATE_SUSP)
-#define NIL_THD_IS_WTSEM(tr)    ((tr)->state == NIL_STATE_WTSEM)
+#define NIL_THD_IS_WTQUEUE(tr)  ((tr)->state == NIL_STATE_WTQUEUE)
 #define NIL_THD_IS_WTOREVT(tr)  ((tr)->state == NIL_STATE_WTOREVT)
 /** @} */
 
@@ -354,7 +354,7 @@
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
 
-#if CH_CUSTOMER_LICENSED_NIL == FALSE
+#if CH_CUSTOMER_LIC_NIL == FALSE
 #error "ChibiOS/NIL not licensed"
 #endif
 
@@ -474,18 +474,25 @@ typedef struct nil_thread thread_t;
 
 #include "chcore.h"
 
+/**
+ * @brief   Structure representing a queue of threads.
+ */
+struct nil_threads_queue {
+  volatile cnt_t    cnt;        /**< @brief Threads Queue counter.          */
+};
+
+/**
+ * @brief   Type of a queue of threads.
+ */
+typedef struct nil_threads_queue threads_queue_t;
+
 #if (CH_CFG_USE_SEMAPHORES == TRUE) || defined(__DOXYGEN__)
 /**
  * @brief   Type of a structure representing a semaphore.
+ * @note    Semaphores are implemented on thread queues, the object is the
+ *          same, the behavior is slightly different.
  */
-typedef struct nil_semaphore semaphore_t;
-
-/**
- * @brief   Structure representing a counting semaphore.
- */
-struct nil_semaphore {
-  volatile cnt_t    cnt;        /**< @brief Semaphore counter.              */
-};
+typedef threads_queue_t semaphore_t;
 #endif /* CH_CFG_USE_SEMAPHORES == TRUE */
 
 /**
@@ -526,6 +533,7 @@ struct nil_thread {
     msg_t               msg;        /**< @brief Wake-up message.            */
     void                *p;         /**< @brief Generic pointer.            */
     thread_reference_t  *trp;       /**< @brief Pointer to thread reference.*/
+    threads_queue_t     *tqp;       /**< @brief Pointer to thread queue.    */
 #if (CH_CFG_USE_SEMAPHORES == TRUE) || defined(__DOXYGEN__)
     semaphore_t         *semp;      /**< @brief Pointer to semaphore.       */
 #endif
@@ -907,6 +915,29 @@ struct nil_system {
 /** @} */
 
 /**
+ * @name    Threads queues
+ */
+/**
+ * @brief   Data part of a static threads queue object initializer.
+ * @details This macro should be used when statically initializing a threads
+ *          queue that is part of a bigger structure.
+ *
+ * @param[in] name      the name of the threads queue variable
+ */
+#define _THREADS_QUEUE_DATA(name) {(cnt_t)0}
+
+/**
+ * @brief   Static threads queue object initializer.
+ * @details Statically initialized threads queues require no explicit
+ *          initialization using @p queue_init().
+ *
+ * @param[in] name      the name of the threads queue variable
+ */
+#define _THREADS_QUEUE_DECL(name)                                           \
+  threads_queue_t name = _THREADS_QUEUE_DATA(name)
+/** @} */
+
+/**
  * @name    Semaphores macros
  * @{
  */
@@ -1126,6 +1157,27 @@ struct nil_system {
     (void) chSchGoSleepTimeoutS(NIL_STATE_SLEEPING, (abstime) -             \
                                 chVTGetSystemTimeX())
 
+/**
+ * @brief   Initializes a threads queue object.
+ *
+ * @param[out] tqp      pointer to the threads queue object
+ *
+ * @init
+ */
+#define chThdQueueObjectInit(tqp) ((tqp)->cnt = (cnt_t)0)
+
+/**
+ * @brief   Evaluates to @p true if the specified queue is empty.
+ *
+ * @param[out] tqp      pointer to the threads queue object
+ * @return              The queue status.
+ * @retval false        if the queue is not empty.
+ * @retval true         if the queue is empty.
+ *
+ * @iclass
+ */
+#define chThdQueueIsEmptyI(tqp) ((bool)(tqp->cnt >= (cnt_t)0))
+
 #if (CH_CFG_USE_SEMAPHORES == TRUE) || defined(__DOXYGEN__)
 /**
  * @brief   Initializes a semaphore with the specified counter value.
@@ -1341,6 +1393,10 @@ extern "C" {
   void chThdResumeI(thread_reference_t *trp, msg_t msg);
   void chThdSleep(systime_t timeout);
   void chThdSleepUntil(systime_t abstime);
+  msg_t chThdEnqueueTimeoutS(threads_queue_t *tqp, systime_t timeout);
+  void chThdDoDequeueNextI(threads_queue_t *tqp, msg_t msg);
+  void chThdDequeueNextI(threads_queue_t *tqp, msg_t msg);
+  void chThdDequeueAllI(threads_queue_t *tqp, msg_t msg);
 #if CH_CFG_USE_SEMAPHORES == TRUE
   msg_t chSemWaitTimeout(semaphore_t *sp, systime_t timeout);
   msg_t chSemWaitTimeoutS(semaphore_t *sp, systime_t timeout);

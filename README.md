@@ -1,13 +1,9 @@
 #### ChNil - ChibiOS/Nil Arduino Library
 
-This is the initial release of a much improved version of ChibiOS/Nil.
 I am starting a new repository since this version is not backward
 compatible with the NilRTOS library.
 
 https://github.com/greiman/NilRTOS-Arduino
-
-I have done some testing with an Uno and a little with a Mega but
-more bugs are likely since I needed to modify core parts of the RTOS.
 
 ChNil is a tiny RTOS library for AVR Arduino boards.
 
@@ -16,7 +12,8 @@ of ChibiOS/Nil and ChibiOS/RT.
 
 http://www.chibios.org/dokuwiki/doku.php
 
-The code is version 2.0.0 from a recent, Jan 2017, trunk version of ChibiOS.
+The code is Nil version 2.0.0 from Stable Version 17.6 of ChibiOS.
+
 The API is considerably different than the original version of Nil.  It is
 now very much like ChibiOS/RT.
 
